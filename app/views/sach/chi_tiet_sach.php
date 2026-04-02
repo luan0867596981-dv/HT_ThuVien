@@ -2,9 +2,9 @@
     <h1 class="h2">Chi Tiết Sách</h1>
     <div>
         <?php if(isset($_SESSION['user']) && $_SESSION['user']['VaiTro'] != 'USER'): ?>
-        <a href="index.php?controller=sach&action=sua&id=<?= $sach['MaSach'] ?>" class="btn btn-warning"><i class="fas fa-edit"></i> Sửa</a>
+        <a href="index.php?controller=sach&action=sua&id=<?= $sach['MaDauSach'] ?>" class="btn btn-warning"><i class="fas fa-edit"></i> Sửa</a>
         <?php endif; ?>
-        <a href="index.php?controller=sach&action=index" class="btn btn-secondary">Quay Lại</a>
+        <a href="index.php?controller=sach&action=index" class="btn btn-secondary shadow-sm">Quay Lại</a>
     </div>
 </div>
 
@@ -59,8 +59,9 @@
                 <?php if(isset($_SESSION['user']) && $_SESSION['user']['VaiTro'] == 'USER' && $sach['SoLuong'] > 0): ?>
                 <div class="mt-4">
                     <!-- Note for USER: they request borrow or something -->
-                    <a href="index.php?controller=muonsach&action=dat_truoc&id=<?= $sach['MaSach'] ?>" class="btn btn-lg btn-success">
-                        <i class="fas fa-bookmark me-1"></i> Đăng Ký Mượn / Đặt Trước
+                    <!-- TASK 2: LIVE BOOKING LINK -->
+                    <a href="index.php?controller=muonsach&action=dat_truoc&id=<?= $sach['MaDauSach'] ?>" class="btn btn-lg btn-indigo rounded-pill px-5 shadow-sm border-0">
+                        <i class="fas fa-bookmark me-2"></i> Đăng Ký Mượn / Đặt Trước
                     </a>
                 </div>
                 <?php endif; ?>

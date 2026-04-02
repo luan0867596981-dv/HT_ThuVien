@@ -31,5 +31,20 @@ class ViPhamController extends BaseController {
             $this->redirect('index.php?controller=vipham&action=index&msg=error');
         }
     }
+
+    public function gui_email() {
+        $id = isset($_GET['id']) ? $_GET['id'] : 0;
+        // Mocking email logic
+        $this->redirect('index.php?controller=vipham&action=index&msg=emailed');
+    }
+
+    public function khoa_quyen() {
+        $id = isset($_GET['id']) ? $_GET['id'] : 0;
+        if ($this->viPhamModel->khoaQuyenDocGia($id)) {
+            $this->redirect('index.php?controller=vipham&action=index&msg=blocked');
+        } else {
+            $this->redirect('index.php?controller=vipham&action=index&msg=error');
+        }
+    }
 }
 ?>

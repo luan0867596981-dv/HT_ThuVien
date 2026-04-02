@@ -1,5 +1,5 @@
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-    <h1 class="h2">Sửa Thông Tin Sách</h1>
+    <h1 class="h2">Cập Nhật Thông Tin Sách</h1>
     <a href="index.php?controller=sach&action=index" class="btn btn-secondary">Quay Lại</a>
 </div>
 
@@ -16,7 +16,9 @@
                     <select name="MaTacGia" class="form-select">
                         <option value="">-- Chọn Tác Giả --</option>
                         <?php foreach($tacgias as $tg): ?>
-                            <option value="<?= $tg['MaTacGia'] ?>" <?= $sach['MaTacGia'] == $tg['MaTacGia'] ? 'selected' : '' ?>><?= htmlspecialchars($tg['TenTacGia']) ?></option>
+                            <option value="<?= $tg['MaTacGia'] ?>" <?= $sach['MaTacGia'] == $tg['MaTacGia'] ? 'selected' : '' ?>>
+                                <?= htmlspecialchars($tg['TenTacGia']) ?>
+                            </option>
                         <?php endforeach; ?>
                     </select>
                 </div>
@@ -25,7 +27,9 @@
                     <select name="MaTheLoai" class="form-select">
                         <option value="">-- Chọn Thể Loại --</option>
                         <?php foreach($theloais as $tl): ?>
-                            <option value="<?= $tl['MaTheLoai'] ?>" <?= $sach['MaTheLoai'] == $tl['MaTheLoai'] ? 'selected' : '' ?>><?= htmlspecialchars($tl['TenTheLoai']) ?></option>
+                            <option value="<?= $tl['MaTheLoai'] ?>" <?= $sach['MaTheLoai'] == $tl['MaTheLoai'] ? 'selected' : '' ?>>
+                                <?= htmlspecialchars($tl['TenTheLoai']) ?>
+                            </option>
                         <?php endforeach; ?>
                     </select>
                 </div>
@@ -38,7 +42,7 @@
                 </div>
                 <div class="col-md-2 mb-3">
                     <label class="form-label">Năm XB</label>
-                    <input type="number" name="NamXuatBan" class="form-control" min="1000" max="<?= date('Y') ?>" value="<?= htmlspecialchars($sach['NamXuatBan']) ?>">
+                    <input type="number" name="NamXuatBan" class="form-control" value="<?= $sach['NamXuatBan'] ?>" min="1000" max="<?= date('Y') ?>">
                 </div>
                 <div class="col-md-3 mb-3">
                     <label class="form-label">ISBN</label>
@@ -46,7 +50,7 @@
                 </div>
                 <div class="col-md-3 mb-3">
                     <label class="form-label">Số Lượng</label>
-                    <input type="number" name="SoLuong" class="form-control" value="<?= htmlspecialchars($sach['SoLuong']) ?>" min="0">
+                    <input type="number" name="SoLuong" class="form-control" value="<?= $sach['SoLuong'] ?>" min="0">
                 </div>
             </div>
 
@@ -64,13 +68,9 @@
             <div class="mb-3">
                 <label class="form-label">Ảnh Bìa Hiện Tại</label>
                 <?php if($sach['AnhBia']): ?>
-                    <div><img src="<?= $sach['AnhBia'] ?>" width="100" class="mb-2 border"></div>
-                <?php else: ?>
-                    <p class="text-muted">Chưa có ảnh bìa</p>
+                    <div><img src="<?= $sach['AnhBia'] ?>" width="100"></div>
                 <?php endif; ?>
-            </div>
-            <div class="mb-3">
-                <label class="form-label">Đổi Ảnh Bìa Tuyển (Tùy Chọn)</label>
+                <label class="form-label mt-2">Thay Đổi Ảnh Bìa</label>
                 <input type="file" name="AnhBia" class="form-control" accept="image/*">
             </div>
 

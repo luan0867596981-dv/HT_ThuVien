@@ -4,71 +4,67 @@ require_once 'app/models/BaseModel.php';
 class TraSachModel extends BaseModel {
     
     public function getPhieuTraHienTai() {
-        $stmt = $this->db->query("SELECT pt.*, pm.MaDocGia, dg.HoTen, pm.NgayMuon 
-                FROM phieu_tra pt 
-                JOIN phieu_muon pm ON pt.MaPhieuMuon = pm.MaPhieuMuon 
+        // ENTERPRISE: Get recently returned items from chi_tiet_muon
+        $stmt = $this->db->query("SELECT ct.*, pm.MaDocGia, dg.HoTen, pm.NgayMuon, ds.TenSach, cs.MaVach
+                FROM chi_tiet_muon ct 
+                JOIN phieu_muon pm ON ct.MaPhieuMuon = pm.MaPhieuMuon 
                 JOIN doc_gia dg ON pm.MaDocGia = dg.MaDocGia 
-                ORDER BY pt.MaPhieuTra DESC LIMIT 100");
+                JOIN cuon_sach cs ON ct.MaCuonSach = cs.MaCuonSach
+                JOIN dau_sach ds ON cs.MaDauSach = ds.MaDauSach
+                WHERE ct.NgayTra IS NOT NULL
+                ORDER BY ct.NgayTra DESC LIMIT 100");
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
-    public function xacNhanTra($maPhieuMuon, $tinhTrangSach, $tienPhat) {
+    public function xacNhanTra($maPhieuMuon, $tinhTrangKhiTra, $tienPhat = 0) {
         try {
             $this->db->beginTransaction();
 
-            $stmtPM = $this->db->prepare("SELECT * FROM phieu_muon WHERE MaPhieuMuon = ?");
-            $stmtPM->execute([$maPhieuMuon]);
-            $pm = $stmtPM->fetch(PDO::FETCH_ASSOC);
-            
-            if (!$pm || $pm['TrangThai'] == 'DA_TRA') {
-                throw new Exception("Phiếu mượn không tồn tại hoặc đã được trả.");
+            // 1. Get loan ticket info
+            $stmt = $this->db->prepare("SELECT * FROM phieu_muon WHERE MaPhieuMuon = ?");
+            $stmt->execute([$maPhieuMuon]);
+            $pm = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            if (!$pm || $pm['TrangThai'] == 'COMPLETED') {
+                throw new Exception("Phiếu mượn không tồn tại hoặc đã được trả hoàn tất.");
             }
 
-            // Update status
-            $trangThaiPhieuPM = (strtotime(date('Y-m-d')) > strtotime($pm['HanTra'])) ? 'QUA_HAN' : 'DA_TRA';
-            if ($tinhTrangSach != 'HOP_LE') {
-                $trangThaiPhieuPM = 'DA_TRA'; // Still returned, but damaged
-            }
-            
-            $stmtUpdatePM = $this->db->prepare("UPDATE phieu_muon SET TrangThai = 'DA_TRA' WHERE MaPhieuMuon = ?");
-            $stmtUpdatePM->execute([$maPhieuMuon]);
+            // 2. Update all items in this ticket to returned state
+            $stmtUpdateCT = $this->db->prepare("UPDATE chi_tiet_muon SET NgayTra = NOW(), TinhTrangKhiTra = ? WHERE MaPhieuMuon = ? AND NgayTra IS NULL");
+            $stmtUpdateCT->execute([$tinhTrangKhiTra, $maPhieuMuon]);
 
-            $loaiViPham = null;
-            if ($tienPhat > 0) {
-                if (strtotime(date('Y-m-d')) > strtotime($pm['HanTra'])) {
-                    $loaiViPham = 'TRE_HAN';
-                }
-                if ($tinhTrangSach == 'HU_HONG' || $tinhTrangSach == 'MAT_SACH') {
-                    $loaiViPham = $tinhTrangSach;
-                }
+            // 3. Update all physical books status
+            $newBookStatus = ($tinhTrangKhiTra == 'LOST') ? 'LOST' : (($tinhTrangKhiTra == 'DAMAGED') ? 'DAMAGED' : 'GOOD');
+            $availStatus = ($tinhTrangKhiTra == 'LOST') ? 'MAINTENANCE' : 'AVAILABLE';
+
+            // Subquery to get all book items in this ticket
+            $stmtBooks = $this->db->prepare("SELECT MaCuonSach FROM chi_tiet_muon WHERE MaPhieuMuon = ?");
+            $stmtBooks->execute([$maPhieuMuon]);
+            $items = $stmtBooks->fetchAll(PDO::FETCH_ASSOC);
+
+            $stmtUpdateBook = $this->db->prepare("UPDATE cuon_sach SET TinhTrang = ?, TrangThaiHienTai = ? WHERE MaCuonSach = ?");
+            foreach ($items as $item) {
+                $stmtUpdateBook->execute([$newBookStatus, $availStatus, $item['MaCuonSach']]);
+            }
+
+            // 4. Handle Violation (Fine)
+            if ($tienPhat > 0 || strtotime(date('Y-m-d')) > strtotime($pm['HanTra'])) {
+                $loaiVP = (strtotime(date('Y-m-d')) > strtotime($pm['HanTra'])) ? 'LATE' : ($tinhTrangKhiTra == 'DAMAGED' ? 'DAMAGED' : 'LOST');
                 
-                if ($loaiViPham) {
-                    $stmtVP = $this->db->prepare("INSERT INTO vi_pham (MaDocGia, LoaiViPham, TienPhat) VALUES (?, ?, ?)");
-                    $stmtVP->execute([$pm['MaDocGia'], $loaiViPham, $tienPhat]);
-                }
+                $stmtVP = $this->db->prepare("INSERT INTO vi_pham (MaPhieuMuon, MaDocGia, LoaiViPham, SoTienPhat, TrangThai) VALUES (?, ?, ?, ?, 'UNPAID')");
+                $stmtVP->execute([$maPhieuMuon, $pm['MaDocGia'], $loaiVP, $tienPhat]);
             }
 
-            // Return books to inventory IF NOT LOST
-            if ($tinhTrangSach != 'MAT_SACH') {
-                $stmtGetSach = $this->db->prepare("SELECT MaSach, SoLuong FROM chi_tiet_muon WHERE MaPhieuMuon = ?");
-                $stmtGetSach->execute([$maPhieuMuon]);
-                $sachMuon = $stmtGetSach->fetchAll(PDO::FETCH_ASSOC);
-
-                $stmtHoanSach = $this->db->prepare("UPDATE sach SET SoLuong = SoLuong + ? WHERE MaSach = ?");
-                foreach ($sachMuon as $s) {
-                    $stmtHoanSach->execute([$s['SoLuong'], $s['MaSach']]);
-                }
-            }
-
-            // Create return ticket
-            $trangThaiPT = ($loaiViPham) ? $loaiViPham : 'HOP_LE';
-            $stmtPT = $this->db->prepare("INSERT INTO phieu_tra (MaPhieuMuon, TrangThai) VALUES (?, ?)");
-            $stmtPT->execute([$maPhieuMuon, $trangThaiPT]);
+            // 5. Complete the main ticket
+            $stmtEndPM = $this->db->prepare("UPDATE phieu_muon SET TrangThai = 'COMPLETED' WHERE MaPhieuMuon = ?");
+            $stmtEndPM->execute([$maPhieuMuon]);
 
             $this->db->commit();
             return true;
         } catch (Exception $e) {
-            $this->db->rollBack();
+            if ($this->db->inTransaction()) {
+                $this->db->rollBack();
+            }
             return false;
         }
     }

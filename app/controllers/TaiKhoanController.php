@@ -18,6 +18,8 @@ class TaiKhoanController extends BaseController {
             $user = $this->model->login($username, $password);
 
             if ($user) {
+                // session_regenerate_id(true); -- Tạm đóng để tránh mất Session trên Laragon
+                
                 $_SESSION['user'] = $user;
                 $this->redirect('index.php?controller=trangchu&action=index');
             } else {
@@ -69,6 +71,41 @@ class TaiKhoanController extends BaseController {
         $profile = $this->model->getProfile($_SESSION['user']['MaTaiKhoan']);
         
         $this->render('taikhoan/hoso', ['profile' => $profile]);
+    }
+
+    /**
+     * VIP FEATURE: CẬP NHẬT HỒ SƠ CÁ NHÂN
+     */
+    public function cap_nhat_ho_so() {
+        if (!isset($_SESSION['user'])) {
+            $this->redirect('index.php?controller=taikhoan&action=dangnhap');
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] == 'POST') {
+            $maTaiKhoan = $_SESSION['user']['MaTaiKhoan'];
+            
+            // Check password match if changing
+            if (!empty($_POST['mat_khau_moi']) && $_POST['mat_khau_moi'] !== $_POST['xac_nhan_mat_khau']) {
+                $this->redirect('index.php?controller=taikhoan&action=hoso&msg=password_mismatch');
+            }
+
+            $data = [
+                'HoTen' => $_POST['hoten'],
+                'Email' => $_POST['email'],
+                'DienThoai' => $_POST['dienthoai'],
+                'DiaChi' => $_POST['diachi'] ?? '',
+                'NgaySinh' => (!empty($_POST['ngaysinh'])) ? $_POST['ngaysinh'] : NULL,
+                'MatKhau' => (!empty($_POST['mat_khau_moi'])) ? $_POST['mat_khau_moi'] : ''
+            ];
+
+            if ($this->model->updateProfile($maTaiKhoan, $data)) {
+                // Update session name if changed
+                $_SESSION['user']['HoTen'] = $_POST['hoten'];
+                $this->redirect('index.php?controller=taikhoan&action=hoso&msg=profile_updated');
+            } else {
+                $this->redirect('index.php?controller=taikhoan&action=hoso&msg=update_failed');
+            }
+        }
     }
 
     // CRUD for Admin

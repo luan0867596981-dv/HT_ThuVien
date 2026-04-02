@@ -1,7 +1,7 @@
 <?php
 class Database {
     private $host = "localhost";
-    private $db_name = "thu_vien";
+    private $db_name = "libsaas_enterprise";
     private $username = "root";
     private $password = "";
     public $conn;

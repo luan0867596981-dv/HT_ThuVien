@@ -16,15 +16,15 @@ class BaseController {
             // Only show sidebar if user is logged in
             if (isset($_SESSION['user'])) {
                 require_once $sidebarPath;
-                echo '<main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 pt-4 pb-5" style="min-height: calc(100vh - 56px); background-color: #f4f6f9;">';
+                echo '<main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 pt-4 pb-5" style="min-height: calc(100vh - 56px); background-color: #f8fafc;">';
             } else {
-                echo '<main class="container pt-4 pb-5" style="min-height: calc(100vh - 56px); background-color: #f4f6f9;">';
+                echo '<main class="container pt-4 pb-5" style="min-height: calc(100vh - 56px); background-color: #f8fafc;">';
             }
             
             require_once $viewPath;
 
             if (isset($_SESSION['user'])) {
-                echo '</main></div></div>'; // Close sidebar divs
+                echo '</main></div></div>'; // Close sidebar/row/container
             } else {
                 echo '</main>';
             }

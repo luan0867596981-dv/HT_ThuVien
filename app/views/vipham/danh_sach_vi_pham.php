@@ -14,8 +14,10 @@
 </div>
 
 <?php if(isset($_GET['msg'])): ?>
-    <?php if($_GET['msg'] == 'paid'): ?><div class="alert alert-success">Xác nhận thanh toán thành công!</div><?php endif; ?>
-    <?php if($_GET['msg'] == 'error'): ?><div class="alert alert-danger">Có lỗi xảy ra khi thanh toán!</div><?php endif; ?>
+    <?php if($_GET['msg'] == 'paid'): ?><div class="alert alert-success shadow-sm"><i class="fas fa-check-circle"></i> Xác nhận thanh toán thành công!</div><?php endif; ?>
+    <?php if($_GET['msg'] == 'emailed'): ?><div class="alert alert-warning shadow-sm"><i class="fas fa-paper-plane"></i> Đã gửi email nhắc nhở cho độc giả này.</div><?php endif; ?>
+    <?php if($_GET['msg'] == 'blocked'): ?><div class="alert alert-danger shadow-sm"><i class="fas fa-user-lock"></i> Đã khóa quyền mượn sách của độc giả này.</div><?php endif; ?>
+    <?php if($_GET['msg'] == 'error'): ?><div class="alert alert-danger">Có lỗi xảy ra khi thực hiện thao tác!</div><?php endif; ?>
 <?php endif; ?>
 
 <div class="table-responsive bg-white rounded shadow-sm">
@@ -42,30 +44,45 @@
                     </div>
                 </td>
                 <td>
-                    <?php if($vp['LoaiViPham'] == 'TRE_HAN'): ?>
+                    <?php if($vp['LoaiViPham'] == 'LATE'): ?>
                         <span class="badge bg-warning text-dark"><i class="far fa-clock"></i> Trễ Hạn</span>
-                    <?php elseif($vp['LoaiViPham'] == 'HU_HONG'): ?>
+                    <?php elseif($vp['LoaiViPham'] == 'DAMAGED'): ?>
                         <span class="badge bg-danger"><i class="fas fa-heart-broken"></i> Hư Hỏng</span>
-                    <?php else: ?>
+                    <?php elseif($vp['LoaiViPham'] == 'LOST'): ?>
                         <span class="badge bg-dark"><i class="fas fa-ghost"></i> Mất Sách</span>
+                    <?php else: ?>
+                        <span class="badge bg-secondary"><i class="fas fa-question-circle"></i> Khác</span>
                     <?php endif; ?>
                 </td>
                 <td class="text-end fw-bold text-danger">
-                    <?= number_format($vp['TienPhat']) ?> ₫
+                    <?= number_format($vp['SoTienPhat'] ?? 0) ?> ₫
                 </td>
                 <td class="text-center">
-                    <?php if($vp['TrangThaiThanhToan'] == 'DA_THANH_TOAN'): ?>
+                    <?php if(($vp['TrangThai'] ?? '') == 'PAID'): ?>
                         <span class="badge rounded-pill bg-success"><i class="fas fa-check"></i> ĐÃ THANH TOÁN</span>
                     <?php else: ?>
                         <span class="badge rounded-pill bg-danger"><i class="fas fa-times"></i> CHƯA THANH TOÁN</span>
                     <?php endif; ?>
                 </td>
                 <td class="pe-3 text-end">
-                    <?php if($vp['TrangThaiThanhToan'] == 'CHUA_THANH_TOAN'): ?>
-                        <a href="index.php?controller=vipham&action=thanh_toan&id=<?= $vp['MaViPham'] ?>" class="btn btn-sm btn-success" onclick="return confirm('Xác nhận độc giả này đã đóng đủ tiền phạt?');"><i class="fas fa-money-bill-wave"></i> Thu Tiền</a>
-                    <?php else: ?>
-                        <button class="btn btn-sm btn-outline-secondary" disabled><i class="fas fa-check-double"></i> Đã Thu</button>
-                    <?php endif; ?>
+                    <div class="d-flex justify-content-end gap-1">
+                        <!-- TASK 3: LIVE ACTION HUB -->
+                        <a href="index.php?controller=vipham&action=gui_email&id=<?= $vp['MaViPham'] ?>" class="btn btn-sm btn-warning text-dark" title="Gửi Email nhắc nhở" onclick="return confirm('Bạn muốn gửi mail nhắc nhở độc giả này?');">
+                            <i class="fas fa-envelope"></i>
+                        </a>
+                        
+                        <a href="index.php?controller=vipham&action=khoa_quyen&id=<?= $vp['MaViPham'] ?>" class="btn btn-sm btn-danger" title="Khóa quyền mượn" onclick="return confirm('XÁC NHẬN: Khóa quyền mượn sách của sinh viên này?');">
+                            <i class="fas fa-user-lock"></i>
+                        </a>
+                        
+                        <?php if(($vp['TrangThai'] ?? '') == 'UNPAID'): ?>
+                            <a href="index.php?controller=vipham&action=thanh_toan&id=<?= $vp['MaViPham'] ?>" class="btn btn-sm btn-success" onclick="return confirm('Xác nhận thu phí phạt?');" title="Thu phí phạt">
+                                <i class="fas fa-money-bill-wave"></i>
+                            </a>
+                        <?php else: ?>
+                            <button class="btn btn-sm btn-outline-secondary" disabled title="Đã thu phí"><i class="fas fa-check-double"></i></button>
+                        <?php endif; ?>
+                    </div>
                 </td>
             </tr>
             <?php endforeach; ?>
@@ -79,3 +96,33 @@
         </tbody>
     </table>
 </div>
+
+<!-- SWEETALERT 2 INTEGRATION FOR PREMIUM TOASTS -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const Toast = Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+            toast.addEventListener('mouseenter', Swal.stopTimer)
+            toast.addEventListener('mouseleave', Swal.resumeTimer)
+        }
+    });
+
+    <?php if(isset($_GET['msg'])): ?>
+        <?php if($_GET['msg'] == 'paid'): ?>
+            Toast.fire({ icon: 'success', title: 'Xác nhận thanh toán thành công!' });
+        <?php elseif($_GET['msg'] == 'emailed'): ?>
+            Toast.fire({ icon: 'info', title: 'Đã gửi email nhắc nhở thành công!' });
+        <?php elseif($_GET['msg'] == 'blocked'): ?>
+            Toast.fire({ icon: 'warning', title: 'Đã khóa quyền mượn sách thành công!' });
+        <?php elseif($_GET['msg'] == 'error'): ?>
+            Toast.fire({ icon: 'error', title: 'Đã có lỗi xảy ra!' });
+        <?php endif; ?>
+    <?php endif; ?>
+});
+</script>

@@ -4,28 +4,29 @@ require_once 'app/models/BaseModel.php';
 class ThongKeModel extends BaseModel {
     
     public function getTongSach() {
-        $stmt = $this->db->query("SELECT SUM(SoLuong) as Tong FROM sach");
+        // Enterprise Logic: Đếm số lượng cuốn sách vật lý thực tế trong kho
+        $stmt = $this->db->query("SELECT COUNT(*) as Tong FROM cuon_sach");
         $res = $stmt->fetch(PDO::FETCH_ASSOC);
         return $res['Tong'] ?? 0;
     }
 
     public function getTongDocGia() {
-        $stmt = $this->db->query("SELECT COUNT(*) as Tong FROM doc_gia WHERE TrangThai = 'ACTIVE'");
+        // Enterprise Logic: Đếm số lượng độc giả đang hoạt động
+        $stmt = $this->db->query("SELECT COUNT(*) as Tong FROM doc_gia");
         $res = $stmt->fetch(PDO::FETCH_ASSOC);
         return $res['Tong'] ?? 0;
     }
 
     public function getTongDangMuon() {
-        $stmt = $this->db->query("SELECT SUM(ct.SoLuong) as Tong 
-                                  FROM chi_tiet_muon ct 
-                                  JOIN phieu_muon pm ON ct.MaPhieuMuon = pm.MaPhieuMuon 
-                                  WHERE pm.TrangThai = 'DANG_MUON'");
+        // Enterprise Logic: Đếm số lượng phiếu mượn đang trong trạng thái lưu thông
+        $stmt = $this->db->query("SELECT COUNT(*) as Tong FROM phieu_muon WHERE TrangThai = 'BORROWING'");
         $res = $stmt->fetch(PDO::FETCH_ASSOC);
         return $res['Tong'] ?? 0;
     }
 
     public function getTongQuaHan() {
-        $stmt = $this->db->query("SELECT COUNT(*) as Tong FROM phieu_muon WHERE TrangThai = 'QUA_HAN' OR (TrangThai = 'DANG_MUON' AND HanTra < NOW())");
+        // Enterprise Logic: Đếm số phiếu mượn bị trễ hạn hoặc trạng thái LATE
+        $stmt = $this->db->query("SELECT COUNT(*) as Tong FROM phieu_muon WHERE TrangThai = 'LATE' OR (TrangThai = 'BORROWING' AND HanTra < NOW())");
         $res = $stmt->fetch(PDO::FETCH_ASSOC);
         return $res['Tong'] ?? 0;
     }

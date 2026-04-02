@@ -26,7 +26,7 @@
                         <img src="<?= $ct['AnhBia'] ?>" width="40" height="50" class="me-3 border">
                         <div>
                             <h6 class="mb-0"><?= htmlspecialchars($ct['TenSach']) ?></h6>
-                            <small class="text-muted">Số lượng mượn: <?= $ct['SoLuong'] ?></small>
+                            <small class="text-muted fw-bold">Mã vạch: <span class="text-indigo-600"><?= $ct['MaVach'] ?></span></small>
                         </div>
                     </li>
                     <?php endforeach; ?>

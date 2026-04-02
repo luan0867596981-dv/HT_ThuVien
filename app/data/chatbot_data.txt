@@ -1,0 +1,18 @@
+FAQ | quy trình, cách mượn | 📖 **Quy trình mượn:** 1. Tra cứu. 2. Lấy sách tại kệ. 3. Quét mã thẻ tại quầy.
+FAQ | quy định, mượn sách, tối đa | 📚 **Quy định mượn:** Tối đa 03 cuốn/lần. Thời hạn 14 ngày. Có thể gia hạn 01 lần.
+FAQ | trễ hạn, phạt, mất sách, rách | ⚠️ **Xử phạt:** Trễ hạn 5.000đ/ngày. Mất/hỏng đền 100% giá trị sách + 20k phí.
+SACH | mắt biếc | 🏷️ **Mắt Biếc** - Tác giả: Nguyễn Nhật Ánh (3 cuốn tại SHELF-A1) - <a href='index.php?controller=sach&action=chitiet&id=1' target='_blank'>Xem chi tiết</a>
+SACH | tôi thấy hoa vàng trên cỏ xanh | 🏷️ **Tôi Thấy Hoa Vàng Trên Cỏ Xanh** - Tác giả: Nguyễn Nhật Ánh (1 cuốn tại A-01) - <a href='index.php?controller=sach&action=chitiet&id=2' target='_blank'>Xem chi tiết</a>
+SACH | đắc nhân tâm | 🏷️ **Đắc Nhân Tâm** - Tác giả: Dale Carnegie (1 cuốn tại FINANCE-01) - <a href='index.php?controller=sach&action=chitiet&id=3' target='_blank'>Xem chi tiết</a>
+SACH | quẳng gánh lo đi và vui sống | 🏷️ **Quẳng Gánh Lo Đi Và Vui Sống** - Tác giả: Dale Carnegie (1 cuốn tại B-01) - <a href='index.php?controller=sach&action=chitiet&id=4' target='_blank'>Xem chi tiết</a>
+SACH | sapiens: lược sử loài người | 🏷️ **Sapiens: Lược Sử Loài Người** - Tác giả: Yuval Noah Harari (2 cuốn tại TECH-H1) - <a href='index.php?controller=sach&action=chitiet&id=5' target='_blank'>Xem chi tiết</a>
+SACH | homo deus: lược sử tương lai | 🏷️ **Homo Deus: Lược Sử Tương Lai** - Tác giả: Yuval Noah Harari (1 cuốn tại C-01) - <a href='index.php?controller=sach&action=chitiet&id=6' target='_blank'>Xem chi tiết</a>
+SACH | lược sử thời gian | 🏷️ **Lược Sử Thời Gian** - Tác giả: Stephen Hawking (1 cuốn tại HUB-C1) - <a href='index.php?controller=sach&action=chitiet&id=7' target='_blank'>Xem chi tiết</a>
+SACH | cha giàu cha nghèo | 🏷️ **Cha Giàu Cha Nghèo** - Tác giả: Robert Kiyosaki (1 cuốn tại D-01) - <a href='index.php?controller=sach&action=chitiet&id=8' target='_blank'>Xem chi tiết</a>
+SACH | dạy con làm giàu - tập 2 | 🏷️ **Dạy Con Làm Giàu - Tập 2** - Tác giả: Robert Kiyosaki (1 cuốn tại E-01) - <a href='index.php?controller=sach&action=chitiet&id=9' target='_blank'>Xem chi tiết</a>
+SACH | 21 bài học cho thế kỷ 21 | 🏷️ **21 Bài Học Cho Thế Kỷ 21** - Tác giả: Yuval Noah Harari (1 cuốn tại F-01) - <a href='index.php?controller=sach&action=chitiet&id=10' target='_blank'>Xem chi tiết</a>
+SACH | vũ trụ trong lòng bàn tay | 🏷️ **Vũ Trụ Trong Lòng Bàn Tay** - Tác giả: Stephen Hawking (1 cuốn tại G-01) - <a href='index.php?controller=sach&action=chitiet&id=11' target='_blank'>Xem chi tiết</a>
+SACH | cho tôi xin một vé đi tuổi thơ | 🏷️ **Cho Tôi Xin Một Vé Đi Tuổi Thơ** - Tác giả: Nguyễn Nhật Ánh (1 cuốn tại H-01) - <a href='index.php?controller=sach&action=chitiet&id=12' target='_blank'>Xem chi tiết</a>
+SACH | kinh tế học hài hước | 🏷️ **Kinh Tế Học Hài Hước** - Tác giả: Dale Carnegie (1 cuốn tại I-01) - <a href='index.php?controller=sach&action=chitiet&id=13' target='_blank'>Xem chi tiết</a>
+SACH | súng, vi trùng và thép | 🏷️ **Súng, Vi Trùng Và Thép** - Tác giả: Yuval Noah Harari (1 cuốn tại J-01) - <a href='index.php?controller=sach&action=chitiet&id=14' target='_blank'>Xem chi tiết</a>
+SACH | bản thiết kế vĩ đại | 🏷️ **Bản Thiết Kế Vĩ Đại** - Tác giả: Stephen Hawking (0 cuốn tại Chưa xếp kệ) - <a href='index.php?controller=sach&action=chitiet&id=15' target='_blank'>Xem chi tiết</a>

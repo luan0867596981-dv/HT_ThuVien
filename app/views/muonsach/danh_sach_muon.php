@@ -25,8 +25,8 @@
 <div class="row">
     <?php foreach($phieuMuons as $pm): ?>
         <div class="col-md-6 mb-4">
-            <div class="card shadow-sm h-100 <?= $pm['TrangThai'] == 'QUA_HAN' ? 'border-danger' : ($pm['TrangThai'] == 'DA_TRA' ? 'border-success' : 'border-primary') ?>">
-                <div class="card-header d-flex justify-content-between align-items-center <?= $pm['TrangThai'] == 'QUA_HAN' ? 'bg-danger text-white' : ($pm['TrangThai'] == 'DA_TRA' ? 'bg-success text-white' : 'bg-primary text-white') ?>">
+            <div class="card shadow-sm h-100 <?= $pm['TrangThai'] == 'LATE' ? 'border-danger' : ($pm['TrangThai'] == 'COMPLETED' ? 'border-success' : 'border-primary') ?>">
+                <div class="card-header d-flex justify-content-between align-items-center <?= $pm['TrangThai'] == 'LATE' ? 'bg-danger text-white' : ($pm['TrangThai'] == 'COMPLETED' ? 'bg-success text-white' : 'bg-primary text-white') ?>">
                     <h5 class="mb-0">Phiếu: #<?= $pm['MaPhieuMuon'] ?></h5>
                     <span class="badge bg-light text-dark fw-bold"><?= $pm['TrangThai'] ?></span>
                 </div>
@@ -34,20 +34,20 @@
                     <p class="mb-1"><i class="fas fa-user text-muted border border-secondary rounded p-1 me-2 pt-0 pb-0 shadow-sm bg-light"></i> <strong>Người Mượn:</strong> <?= htmlspecialchars($pm['HoTen']) ?></p>
                     <p class="mb-1"><i class="fas fa-phone text-muted border border-secondary rounded p-1 me-2 pt-0 pb-0 shadow-sm bg-light"></i> <strong>SĐT:</strong> <?= htmlspecialchars($pm['DienThoai'] ?? 'N/A') ?></p>
                     <p class="mb-1 text-secondary"><i class="far fa-calendar-alt text-muted border border-secondary rounded p-1 me-2 pt-0 pb-0 shadow-sm bg-light"></i> <strong>Ngày Mượn:</strong> <?= date('d/m/Y H:i', strtotime($pm['NgayMuon'])) ?></p>
-                    <p class="mb-3 <?= strtotime($pm['HanTra']) < time() && $pm['TrangThai'] != 'DA_TRA' ? 'text-danger fw-bold' : 'text-primary' ?>"><i class="fas fa-calendar-check border border-secondary rounded p-1 me-2 pt-0 pb-0 shadow-sm bg-light"></i> <strong>Hạn Trả:</strong> <?= date('d/m/Y', strtotime($pm['HanTra'])) ?></p>
+                    <p class="mb-3 <?= strtotime($pm['HanTra']) < time() && $pm['TrangThai'] != 'COMPLETED' ? 'text-danger fw-bold' : 'text-primary' ?>"><i class="fas fa-calendar-check border border-secondary rounded p-1 me-2 pt-0 pb-0 shadow-sm bg-light"></i> <strong>Hạn Trả:</strong> <?= date('d/m/Y', strtotime($pm['HanTra'])) ?></p>
                     
                     <h6 class="border-bottom pb-2">Danh Sách Mượn:</h6>
                     <ul class="list-group list-group-flush mb-3">
                         <?php foreach($pm['ChiTiet'] as $ct): ?>
                         <li class="list-group-item d-flex justify-content-between align-items-center px-0 py-1 border-0">
                             <div><i class="fas fa-book-open text-muted me-2 small"></i> <?= htmlspecialchars($ct['TenSach']) ?></div>
-                            <span class="badge bg-secondary rounded-pill">SL: <?= $ct['SoLuong'] ?></span>
+                            <span class="badge bg-secondary rounded-pill"><?= $ct['MaVach'] ?></span>
                         </li>
                         <?php endforeach; ?>
                     </ul>
                 </div>
                 
-                <?php if($pm['TrangThai'] != 'DA_TRA'): ?>
+                <?php if($pm['TrangThai'] != 'COMPLETED'): ?>
                 <div class="card-footer bg-white text-end">
                     <a href="index.php?controller=trasach&action=xac_nhan&id=<?= $pm['MaPhieuMuon'] ?>" class="btn btn-success btn-sm"><i class="fas fa-check-circle me-1"></i> Xác nhận trả sách</a>
                 </div>

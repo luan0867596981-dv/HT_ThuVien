@@ -8,5 +8,9 @@ class BaseModel {
         $database = new Database();
         $this->db = $database->getConnection();
     }
+
+    public function getDbConnection() {
+        return $this->db;
+    }
 }
 ?>
